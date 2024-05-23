@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify
 import csv
 import os
 
@@ -88,8 +88,7 @@ def process():
         novy_soubor_path = f"data/{nazev_noveho_souboru}"
         save_csv(novy_soubor_path, zmeny)
 
-        flash('Změny byly úspěšně provedeny. Můžete pokračovat v úpravách nebo stáhnout nový soubor.')
-        return render_template('index.html', vsechny_zony=vsechny_zony_seznam, nazev_noveho_souboru=nazev_noveho_souboru)
+        return jsonify({'filename': nazev_noveho_souboru})
 
     except Exception as e:
         flash(f"Došlo k chybě: {e}")
