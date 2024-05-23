@@ -56,6 +56,7 @@ def modify_values(zmeny, zony_data):
         for row in zmeny:
             if row[3] in zmenene_zony:
                 row[5] = cena_hovoru
+                row[7] = cena_hovoru  # Měnění ceny i pro druhý interval
                 if tarifikace:  # Pokud je tarifikace zadána, použij ji
                     row[6] = tarifikace
 
@@ -84,7 +85,7 @@ def process():
 
         modify_values(zmeny, zony_data)
 
-        nazev_noveho_souboru = request.form['nazev_noveho_souboru']
+        nazev_noveho_souboru = request.form['nazev_noveho_souboru'] + '.csv'  # Přidání přípony .csv
         novy_soubor_path = f"data/{nazev_noveho_souboru}"
         save_csv(novy_soubor_path, zmeny)
 
