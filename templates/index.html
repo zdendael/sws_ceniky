@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Vytvoření nového ceníku</title>
+    <title>Udělátor Sipwise ceníku</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         body {
@@ -111,8 +111,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Vytvoření nového ceníku</h1>
-        <h2>z výchozího Default ceníku WIA</h2>
+        <h1>Udělátor Sipwise ceníku</h1>
+        <h2>na základě výchozího WIA ceníku</h2>
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             <ul class="flashes">
