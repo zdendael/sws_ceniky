@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <title>Úprava CSV ceníku</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Úprava CSV ceníku</h1>
+        <form action="{{ url_for('process') }}" method="POST">
+            <label for="nazev_zony">Název zóny:</label>
+            <input type="text" id="nazev_zony" name="nazev_zony" required>
+
+            <label for="cena_hovoru">Cena hovoru (halíře za sekundu):</label>
+            <input type="text" id="cena_hovoru" name="cena_hovoru" required>
+
+            <label for="zmena_tarifikace">Měnit tarifikaci?</label>
+            <select id="zmena_tarifikace" name="zmena_tarifikace">
+                <option value="n">Ne</option>
+                <option value="a">Ano</option>
+            </select>
+
+            <div id="tarifikace_fields" style="display: none;">
+                <label for="tarifikace_1">Tarifikace pro první interval (v sekundách):</label>
+                <input type="text" id="tarifikace_1" name="tarifikace_1">
+
+                <label for="tarifikace_2">Tarifikace pro druhý a další interval (v sekundách):</label>
+                <input type="text" id="tarifikace_2" name="tarifikace_2">
+            </div>
+
+            <label for="nazev_noveho_souboru">Název nového souboru (včetně .csv):</label>
+            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required>
+
+            <button type="submit">Uložit změny</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('zmena_tarifikace').addEventListener('change', function () {
+            var tarifikaceFields = document.getElementById('tarifikace_fields');
+            if (this.value === 'a') {
+                tarifikaceFields.style.display = 'block';
+            } else {
+                tarifikaceFields.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

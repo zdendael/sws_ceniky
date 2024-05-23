@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head>
+    <title>Výsledek</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Změny byly uloženy</h1>
+        <p>Nový soubor byl vytvořen s názvem: {{ nazev_noveho_souboru }}</p>
+        <a href="{{ url_for('index') }}">Zpět na úvodní stránku</a>
+    </div>
+</body>
+</html>
