@@ -6,11 +6,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
         }
         .container {
-            max-width: 800px;  /* Zvětšení šířky formuláře */
-            margin: 0 auto;
-            border: 1px solid #ccc;
+            max-width: 1000px;
+            margin: 50px auto;
+            background-color: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -23,18 +24,19 @@
         .zone-group select,
         .zone-group input {
             margin-right: 10px;
-            height: 30px;  /* Nastavení výšky input polí */
+            height: 40px;
             padding: 5px;
-            font-size: 16px;  /* Zvýšení velikosti písma */
+            font-size: 16px;
+            flex: 1;
         }
         .zone-group select {
-            min-width: 300px;  /* Nastavení minimální šířky pro select */
+            min-width: 250px;
         }
         .zone-group input[name="cena_hovoru"] {
-            width: 120px;  /* Šířka pro pole ceny hovoru */
+            width: 120px;
         }
         .zone-group input[name="tarifikace"] {
-            width: 180px;  /* Šířka pro pole tarifikace */
+            width: 150px;
         }
         .zone-group .remove-button {
             background-color: #ff4c4c;
@@ -43,11 +45,12 @@
             padding: 5px;
             cursor: pointer;
             font-size: 16px;
-            height: 30px;
-            width: 30px;
+            height: 40px;
+            width: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 4px;
         }
         .add-button, button[type="submit"] {
             background-color: #7ab00f;
@@ -57,9 +60,10 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 10px;
+            border-radius: 4px;
         }
         .add-button:hover, button[type="submit"]:hover {
-            background-color: #43780b;  /* Barva po přejetí myší */
+            background-color: #43780b;
         }
         .add-button {
             display: block;
@@ -111,13 +115,13 @@
                             <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka" oninput="validateInput(this)">
-                    <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla" oninput="validateInput(this)">
+                    <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
+                    <input type="number" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" step="1" oninput="validateInput(this)">
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
             <label for="nazev_noveho_souboru">Název nového souboru:</label>
-            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 30px;">
+            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 40px;">
             <button type="submit">Vytvořit a stáhnout ceník</button>
         </form>
     </div>
@@ -134,8 +138,8 @@
                         <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                     {% endfor %}
                 </select>
-                <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka" oninput="validateInput(this)">
-                <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla" oninput="validateInput(this)">
+                <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
+                <input type="number" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" step="1" oninput="validateInput(this)">
                 <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
             `;
             zoneContainer.appendChild(newZoneGroup);
