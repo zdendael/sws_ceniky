@@ -5,20 +5,35 @@ import os
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Seznamy zón pro Evropskou unii (zóna EU-F a EU-M)
-zona_EU_F = ["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"]
-zona_EU_M = ["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"]
-vsechny_zony = sorted(zona_EU_F + zona_EU_M)
+# Funkce pro načtení všech zón ze zdrojového CSV souboru
+def load_zones_from_csv(filename):
+    zones = {}
+    with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)  # Přeskočíme hlavičku
+        for row in reader:
+            zones[row[3]] = row[4]
+    return zones
+
+# Načtení všech zón ze souboru
+vsechny_zony = load_zones_from_csv('data/Default_CZK_1.csv')
+
+# Přidání zón EU-F a EU-M do seznamu zón
+vsechny_zony["EU-F"] = "Evropská unie - F"
+vsechny_zony["EU-M"] = "Evropská unie - M"
+
+# Konverze na seznam pro HTML šablonu
+vsechny_zony_seznam = [{"kod": k, "nazev": v} for k, v in vsechny_zony.items()]
 
 # Načtení CSV souboru do seznamu
 def load_csv(filename):
-    with open(filename, 'r', newline='') as csvfile:
+    with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         return list(reader)
 
 # Uložení seznamu do CSV souboru
 def save_csv(filename, data):
-    with open(filename, 'w', newline='') as csvfile:
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(data)
 
@@ -34,9 +49,9 @@ def modify_values(zmeny, zony_data):
         zmenene_zony = []
 
         if nazev_zony == "EU-F":
-            zmenene_zony.extend(zona_EU_F)
+            zmenene_zony.extend(["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"])
         elif nazev_zony == "EU-M":
-            zmenene_zony.extend(zona_EU_M)
+            zmenene_zony.extend(["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"])
         else:
             zmenene_zony.append(nazev_zony)
 
@@ -55,7 +70,7 @@ def index():
     elif not os.path.isfile('data/Default_CZK_1.csv'):
         flash('Soubor "Default_CZK_1.csv" nebyl nalezen ve složce "data". Ujistěte se, že soubor je na správném místě.')
 
-    return render_template('index.html', vsechny_zony=vsechny_zony)
+    return render_template('index.html', vsechny_zony=vsechny_zony_seznam)
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -80,7 +95,7 @@ def process():
         save_csv(novy_soubor_path, zmeny)
 
         flash('Změny byly úspěšně provedeny. Můžete pokračovat v úpravách nebo stáhnout nový soubor.')
-        return render_template('index.html', vsechny_zony=vsechny_zony, nazev_noveho_souboru=nazev_noveho_souboru)
+        return render_template('index.html', vsechny_zony=vsechny_zony_seznam, nazev_noveho_souboru=nazev_noveho_souboru)
 
     except Exception as e:
         flash(f"Došlo k chybě: {e}")
