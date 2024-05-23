@@ -28,6 +28,7 @@
             height: 40px; /* Stejná výška pro všechny vstupní pole */
             padding: 5px;
             font-size: 16px; /* Zvýšení velikosti písma */
+            box-sizing: border-box; /* Zajištění, že padding nebude zvyšovat celkovou výšku prvku */
         }
         .zone-group select {
             flex: 2; /* Flexibilní šířka pro select */
@@ -91,6 +92,9 @@
         .invalid {
             border-color: red;
         }
+        #nazev_noveho_souboru {
+            width: 300px; /* Stejná šířka jako tlačítko pod ním */
+        }
     </style>
 </head>
 <body>
@@ -123,8 +127,8 @@
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
             <label for="nazev_noveho_souboru">Název nového souboru:</label>
-            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 40px; width: 100%;">
-            <button type="submit">Vytvořit a stáhnout ceník</button>
+            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 40px;">
+            <button type="submit" style="width: 300px;">Vytvořit a stáhnout ceník</button>
         </form>
     </div>
 
