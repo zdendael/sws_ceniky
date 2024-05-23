@@ -42,7 +42,7 @@ def modify_values(zmeny, zony_data):
     for zona in zony_data:
         nazev_zony = zona['nazev_zony']
         cena_hovoru = zona['cena_hovoru']
-        tarifikace = zona['tarifikace']
+        # tarifikace = zona['tarifikace']
 
         zmenene_zony = []
 
@@ -57,8 +57,8 @@ def modify_values(zmeny, zony_data):
             if row[3] in zmenene_zony:
                 row[5] = cena_hovoru
                 row[7] = cena_hovoru  # Měnění ceny i pro druhý interval
-                if tarifikace:  # Pokud je tarifikace zadána, použij ji
-                    row[6] = tarifikace
+                # if tarifikace:  # Pokud je tarifikace zadána, použij ji
+                #     row[6] = tarifikace
 
 @app.route('/')
 def index():
@@ -80,7 +80,7 @@ def process():
             zony_data.append({
                 'nazev_zony': request.form.getlist('nazev_zony')[i],
                 'cena_hovoru': request.form.getlist('cena_hovoru')[i],
-                'tarifikace': request.form.getlist('tarifikace')[i] if request.form.getlist('tarifikace')[i] else None
+                # 'tarifikace': request.form.getlist('tarifikace')[i] if request.form.getlist('tarifikace')[i] else None
             })
 
         modify_values(zmeny, zony_data)
