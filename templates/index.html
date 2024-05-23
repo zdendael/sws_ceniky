@@ -10,7 +10,7 @@
         }
         .container {
             width: 90%; /* Zvýšení šířky kontejneru */
-            max-width: 800px; /* Maximální šířka */
+            max-width: 1200px; /* Maximální šířka */
             margin: 50px auto;
             background-color: white;
             padding: 20px;
@@ -109,7 +109,7 @@
         <form action="{{ url_for('process') }}" method="POST" id="zone-form">
             <div id="zone-container">
                 <div class="zone-group">
-                    <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions()">
+                    <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions(this)">
                         <option value="">Vyberte zónu</option>
                         {% for zona in vsechny_zony %}
                             <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
@@ -117,6 +117,7 @@
                     </select>
                     <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
                     <input type="number" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" step="1" oninput="validateInput(this)">
+                    <button type="button" class="remove-values-button" onclick="removeValues(this)">×</button>
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
@@ -127,12 +128,15 @@
     </div>
 
     <script>
+        const euFZones = ["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"];
+        const euMZones = ["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"];
+
         function addZone() {
             var zoneContainer = document.getElementById('zone-container');
             var newZoneGroup = document.createElement('div');
             newZoneGroup.classList.add('zone-group');
             newZoneGroup.innerHTML = `
-                <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions()">
+                <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions(this)">
                     <option value="">Vyberte zónu</option>
                     {% for zona in vsechny_zony %}
                         <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
@@ -152,18 +156,40 @@
             updateZoneOptions();
         }
 
-        function updateZoneOptions() {
+        function removeValues(button) {
+            var zoneGroup = button.parentElement;
+            zoneGroup.querySelector('select').value = '';
+            zoneGroup.querySelector('input[name="cena_hovoru"]').value = '';
+            zoneGroup.querySelector('input[name="tarifikace"]').value = '';
+            updateZoneOptions();
+        }
+
+        function updateZoneOptions(selectElement = null) {
             var selectedZones = Array.from(document.querySelectorAll('.nazev_zony')).map(select => select.value);
+            var euSelected = selectedZones.includes('EU-F') || selectedZones.includes('EU-M');
+            var individualSelectedZones = selectedZones.filter(zone => euFZones.includes(zone) || euMZones.includes(zone));
+
             document.querySelectorAll('.nazev_zony').forEach(select => {
                 var currentValue = select.value;
                 Array.from(select.options).forEach(option => {
                     if (option.value && selectedZones.includes(option.value) && option.value !== currentValue) {
+                        option.disabled = true;
+                    } else if ((option.value === 'EU-F' || option.value === 'EU-M') && individualSelectedZones.length > 0) {
+                        option.disabled = true;
+                    } else if (euSelected && (euFZones.includes(option.value) || euMZones.includes(option.value))) {
                         option.disabled = true;
                     } else {
                         option.disabled = false;
                     }
                 });
             });
+
+            if (selectElement) {
+                if ((selectElement.value === 'EU-F' || selectElement.value === 'EU-M') && individualSelectedZones.length > 0) {
+                    alert('Zvolte prosím buď jednotlivé země nebo celou skupinu EU, ale ne obojí.');
+                    selectElement.value = '';
+                }
+            }
         }
 
         function validateInput(input) {
