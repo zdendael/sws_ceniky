@@ -19,19 +19,20 @@
         .zone-group select,
         .zone-group input {
             margin-right: 10px;
-            height: 40px;  /* Zvýšení výšky input polí */
+            height: 30px;  /* Nastavení výšky input polí */
             padding: 5px;
             font-size: 16px;  /* Zvýšení velikosti písma */
             flex: 1;  /* Umožňuje input polím růst */
         }
         .zone-group .remove-button {
-            background-color: #ff0000;
+            background-color: #ff4c4c;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 5px 10px;
             cursor: pointer;
             font-size: 16px;
             margin-top: 10px;
+            height: 30px;
         }
         .add-button, button[type="submit"] {
             background-color: #7ab00f;
@@ -41,6 +42,9 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 10px;
+        }
+        .add-button:hover, button[type="submit"]:hover {
+            background-color: #43780b;  /* Barva po přejetí myší */
         }
         .add-button {
             display: block;
@@ -59,6 +63,9 @@
             color: red;
             list-style-type: none;
             padding: 0;
+        }
+        label {
+            font-size: 16px;
         }
     </style>
 </head>
@@ -86,12 +93,12 @@
                     </select>
                     <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required>
                     <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)">
-                    <button type="button" class="remove-button" onclick="removeZone(this)">X</button>
+                    <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
             <label for="nazev_noveho_souboru">Název nového souboru:</label>
-            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required>
+            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 30px;">
             <button type="submit">Vytvořit a stáhnout ceník</button>
         </form>
     </div>
@@ -110,7 +117,7 @@
                 </select>
                 <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required>
                 <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)">
-                <button type="button" class="remove-button" onclick="removeZone(this)">X</button>
+                <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
             `;
             zoneContainer.appendChild(newZoneGroup);
             updateZoneOptions();
