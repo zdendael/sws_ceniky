@@ -108,6 +108,7 @@
         {% endwith %}
         <form action="{{ url_for('process') }}" method="POST" id="zone-form">
             <div id="zone-container">
+                <!-- První řádek formuláře, formátovaný stejně jako další řádky -->
                 <div class="zone-group">
                     <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions(this)">
                         <option value="">Vyberte zónu</option>
@@ -117,7 +118,7 @@
                     </select>
                     <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
                     <input type="number" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" step="1" oninput="validateInput(this)">
-                    <button type="button" class="remove-values-button" onclick="removeValues(this)">×</button>
+                    <button type="button" class="remove-button" onclick="removeValues(this)">×</button>
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
