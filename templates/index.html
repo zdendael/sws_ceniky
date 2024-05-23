@@ -8,8 +8,12 @@
             font-family: Arial, sans-serif;
         }
         .container {
-            max-width: 1000px;  /* Zvětšení šířky formuláře */
+            max-width: 800px;  /* Zvětšení šířky formuláře */
             margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .zone-group {
             display: flex;
@@ -22,25 +26,23 @@
             height: 30px;  /* Nastavení výšky input polí */
             padding: 5px;
             font-size: 16px;  /* Zvýšení velikosti písma */
-            flex: 1;  /* Umožňuje input polím růst */
         }
         .zone-group select {
             min-width: 300px;  /* Nastavení minimální šířky pro select */
         }
         .zone-group input[name="cena_hovoru"] {
-            width: 100px;  /* Šířka pro pole ceny hovoru */
+            width: 120px;  /* Šířka pro pole ceny hovoru */
         }
         .zone-group input[name="tarifikace"] {
-            width: 150px;  /* Šířka pro pole tarifikace */
+            width: 180px;  /* Šířka pro pole tarifikace */
         }
         .zone-group .remove-button {
             background-color: #ff4c4c;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
             height: 30px;
             width: 30px;
             display: flex;
@@ -82,6 +84,9 @@
             display: block;
             margin-top: 20px;
         }
+        .invalid {
+            border-color: red;
+        }
     </style>
 </head>
 <body>
@@ -106,8 +111,8 @@
                             <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka">
-                    <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla">
+                    <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka" oninput="validateInput(this)">
+                    <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla" oninput="validateInput(this)">
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
@@ -129,8 +134,8 @@
                         <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                     {% endfor %}
                 </select>
-                <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka">
-                <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla">
+                <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka" oninput="validateInput(this)">
+                <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla" oninput="validateInput(this)">
                 <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
             `;
             zoneContainer.appendChild(newZoneGroup);
@@ -155,6 +160,14 @@
                     }
                 });
             });
+        }
+
+        function validateInput(input) {
+            if (input.checkValidity()) {
+                input.classList.remove('invalid');
+            } else {
+                input.classList.add('invalid');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
