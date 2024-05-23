@@ -16,27 +16,34 @@
             </ul>
           {% endif %}
         {% endwith %}
-        <form action="{{ url_for('process') }}" method="POST">
-            <label for="nazev_zony">Název zóny:</label>
-            <input type="text" id="nazev_zony" name="nazev_zony" required>
+        <form action="{{ url_for('process') }}" method="POST" id="zone-form">
+            <div class="zone-group">
+                <label for="nazev_zony">Název zóny:</label>
+                <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions()">
+                    <option value="">Vyberte zónu</option>
+                    {% for zona in vsechny_zony %}
+                        <option value="{{ zona }}">{{ zona }}</option>
+                    {% endfor %}
+                </select>
 
-            <label for="cena_hovoru">Cena hovoru (halíře za sekundu):</label>
-            <input type="text" id="cena_hovoru" name="cena_hovoru" required>
+                <label for="cena_hovoru">Cena hovoru (halíře za sekundu):</label>
+                <input type="text" name="cena_hovoru" required>
 
-            <label for="zmena_tarifikace">Měnit tarifikaci?</label>
-            <select id="zmena_tarifikace" name="zmena_tarifikace">
-                <option value="n">Ne</option>
-                <option value="a">Ano</option>
-            </select>
+                <label for="zmena_tarifikace">Měnit tarifikaci?</label>
+                <select class="zmena_tarifikace" name="zmena_tarifikace" onchange="toggleTarifikaceFields(this)">
+                    <option value="n">Ne</option>
+                    <option value="a">Ano</option>
+                </select>
 
-            <div id="tarifikace_fields" style="display: none;">
-                <label for="tarifikace_1">Tarifikace pro první interval (v sekundách):</label>
-                <input type="text" id="tarifikace_1" name="tarifikace_1">
+                <div class="tarifikace_fields" style="display: none;">
+                    <label for="tarifikace_1">Tarifikace pro první interval (v sekundách):</label>
+                    <input type="text" name="tarifikace_1">
 
-                <label for="tarifikace_2">Tarifikace pro druhý a další interval (v sekundách):</label>
-                <input type="text" id="tarifikace_2" name="tarifikace_2">
+                    <label for="tarifikace_2">Tarifikace pro druhý a další interval (v sekundách):</label>
+                    <input type="text" name="tarifikace_2">
+                </div>
             </div>
-
+            <button type="button" onclick="addZone()">+</button>
             <label for="nazev_noveho_souboru">Název nového souboru (včetně .csv):</label>
             <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required>
 
@@ -49,13 +56,52 @@
     </div>
 
     <script>
-        document.getElementById('zmena_tarifikace').addEventListener('change', function () {
-            var tarifikaceFields = document.getElementById('tarifikace_fields');
-            if (this.value === 'a') {
+        function addZone() {
+            var zoneGroup = document.querySelector('.zone-group');
+            var newZoneGroup = zoneGroup.cloneNode(true);
+
+            // Reset the values of the cloned inputs
+            newZoneGroup.querySelectorAll('input').forEach(input => {
+                input.value = '';
+            });
+            newZoneGroup.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+            newZoneGroup.querySelector('.tarifikace_fields').style.display = 'none';
+
+            document.getElementById('zone-form').insertBefore(newZoneGroup, document.getElementById('zone-form').lastElementChild.previousElementSibling);
+
+            updateZoneOptions();
+        }
+
+        function toggleTarifikaceFields(selectElement) {
+            var tarifikaceFields = selectElement.closest('.zone-group').querySelector('.tarifikace_fields');
+            if (selectElement.value === 'a') {
                 tarifikaceFields.style.display = 'block';
             } else {
                 tarifikaceFields.style.display = 'none';
             }
+        }
+
+        function updateZoneOptions() {
+            var selectedZones = Array.from(document.querySelectorAll('.nazev_zony')).map(select => select.value);
+            document.querySelectorAll('.nazev_zony').forEach(select => {
+                var currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value && selectedZones.includes(option.value) && option.value !== currentValue) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.zmena_tarifikace').forEach(select => {
+                toggleTarifikaceFields(select);
+            });
+            updateZoneOptions();
         });
     </script>
 </body>
