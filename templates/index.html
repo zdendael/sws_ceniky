@@ -243,6 +243,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.zone-group select').innerHTML = getSelectOptionsHtml();
             updateZoneOptions();
         });
 
