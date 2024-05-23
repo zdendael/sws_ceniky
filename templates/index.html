@@ -128,7 +128,15 @@
                 <!-- První řádek formuláře, formátovaný stejně jako další řádky -->
                 <div class="zone-group">
                     <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions(this)">
-                        ${getSelectOptionsHtml()}
+                        <option value="">Vyberte zónu</option>
+                        <option value="CZE-F">CZE-F : Česká republika - F</option>
+                        <option value="CZE-M">CZE-M : Česká republika - M</option>
+                        <option value="EU-F">EU-F : Evropská unie - F</option>
+                        <option value="EU-M">EU-M : Evropská unie - M</option>
+                        <option value="" disabled>──────────</option>
+                        {% for zona in vsechny_zony %}
+                            <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
+                        {% endfor %}
                     </select>
                     <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
                     <input type="number" name="tarifikace_1" class="tarifikace" placeholder="Tarifikace 1 (nepovinné)" step="1" title="Tarifikace pro první interval" oninput="validateInput(this)">
@@ -148,7 +156,7 @@
     <script>
         const euFZones = ["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"];
         const euMZones = ["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"];
-        
+
         const specialZones = [
             {kod: 'CZE-F', nazev: 'Česká republika - F'},
             {kod: 'CZE-M', nazev: 'Česká republika - M'},
