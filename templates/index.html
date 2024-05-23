@@ -69,6 +69,14 @@
         .add-button {
             display: block;
             margin: 10px 0;
+            text-align: center; /* Vycentrování textu v tlačítku */
+        }
+        .form-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 20px;
         }
         h1 {
             font-size: 24px;
@@ -125,10 +133,12 @@
                     <button type="button" class="remove-button" onclick="removeValues(this)">×</button>
                 </div>
             </div>
-            <button type="button" class="add-button" onclick="addZone()">+</button>
-            <label for="nazev_noveho_souboru">Název nového souboru:</label>
-            <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 40px;">
-            <button type="submit" style="width: 300px;">Vytvořit a stáhnout ceník</button>
+            <button type="button" class="add-button" onclick="addZone()">Přidat další zónu</button>
+            <div class="form-footer">
+                <label for="nazev_noveho_souboru">Název nového souboru:</label>
+                <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required style="height: 40px;">
+                <button type="submit" style="width: 300px;">Vytvořit a stáhnout ceník</button>
+            </div>
         </form>
     </div>
 
