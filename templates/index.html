@@ -4,28 +4,25 @@
     <title>Úprava CSV ceníku</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        .select-container {
-            position: relative;
+        .zone-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
-        .select-search {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 8px;
-            z-index: 1;
+        .zone-group select,
+        .zone-group input {
+            margin-right: 10px;
         }
-        select {
-            width: 100%;
-            height: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 0;
-            background: transparent;
-            appearance: none;
-            border: 1px solid #ccc;
+        .zone-group .tarifikace {
+            width: 200px;
+        }
+        .add-button {
+            display: block;
+            margin: 10px 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -42,39 +39,21 @@
           {% endif %}
         {% endwith %}
         <form action="{{ url_for('process') }}" method="POST" id="zone-form">
-            <div class="zone-group">
-                <label for="nazev_zony">Název zóny:</label>
-                <div class="select-container">
-                    <input type="text" class="select-search" oninput="filterOptions(this)" placeholder="Vyberte zónu...">
+            <div id="zone-container">
+                <div class="zone-group">
                     <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions()">
                         <option value="">Vyberte zónu</option>
                         {% for zona in vsechny_zony %}
                             <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                         {% endfor %}
                     </select>
-                </div>
-
-                <label for="cena_hovoru">Cena hovoru (halíře za sekundu):</label>
-                <input type="text" name="cena_hovoru" required>
-
-                <label for="zmena_tarifikace">Měnit tarifikaci?</label>
-                <select class="zmena_tarifikace" name="zmena_tarifikace" onchange="toggleTarifikaceFields(this)">
-                    <option value="n">Ne</option>
-                    <option value="a">Ano</option>
-                </select>
-
-                <div class="tarifikace_fields" style="display: none;">
-                    <label for="tarifikace_1">Tarifikace pro první interval (v sekundách):</label>
-                    <input type="text" name="tarifikace_1">
-
-                    <label for="tarifikace_2">Tarifikace pro druhý a další interval (v sekundách):</label>
-                    <input type="text" name="tarifikace_2">
+                    <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required>
+                    <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)">
                 </div>
             </div>
-            <button type="button" onclick="addZone()">+</button>
+            <button type="button" class="add-button" onclick="addZone()">+</button>
             <label for="nazev_noveho_souboru">Název nového souboru (včetně .csv):</label>
             <input type="text" id="nazev_noveho_souboru" name="nazev_noveho_souboru" required>
-
             <button type="submit">Uložit změny</button>
         </form>
 
@@ -85,30 +64,21 @@
 
     <script>
         function addZone() {
-            var zoneGroup = document.querySelector('.zone-group');
-            var newZoneGroup = zoneGroup.cloneNode(true);
-
-            // Reset the values of the cloned inputs
-            newZoneGroup.querySelectorAll('input').forEach(input => {
-                input.value = '';
-            });
-            newZoneGroup.querySelectorAll('select').forEach(select => {
-                select.selectedIndex = 0;
-            });
-            newZoneGroup.querySelector('.tarifikace_fields').style.display = 'none';
-
-            document.getElementById('zone-form').insertBefore(newZoneGroup, document.getElementById('zone-form').lastElementChild.previousElementSibling);
-
+            var zoneContainer = document.getElementById('zone-container');
+            var newZoneGroup = document.createElement('div');
+            newZoneGroup.classList.add('zone-group');
+            newZoneGroup.innerHTML = `
+                <select class="nazev_zony" name="nazev_zony" required onchange="updateZoneOptions()">
+                    <option value="">Vyberte zónu</option>
+                    {% for zona in vsechny_zony %}
+                        <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required>
+                <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)">
+            `;
+            zoneContainer.appendChild(newZoneGroup);
             updateZoneOptions();
-        }
-
-        function toggleTarifikaceFields(selectElement) {
-            var tarifikaceFields = selectElement.closest('.zone-group').querySelector('.tarifikace_fields');
-            if (selectElement.value === 'a') {
-                tarifikaceFields.style.display = 'block';
-            } else {
-                tarifikaceFields.style.display = 'none';
-            }
         }
 
         function updateZoneOptions() {
@@ -125,25 +95,7 @@
             });
         }
 
-        function filterOptions(inputElement) {
-            var filter = inputElement.value.toUpperCase();
-            var select = inputElement.nextElementSibling;
-            var options = select.getElementsByTagName("option");
-
-            for (var i = 0; i < options.length; i++) {
-                var txtValue = options[i].textContent || options[i].innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    options[i].style.display = "";
-                } else {
-                    options[i].style.display = "none";
-                }
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.zmena_tarifikace').forEach(select => {
-                toggleTarifikaceFields(select);
-            });
             updateZoneOptions();
         });
     </script>
