@@ -1,109 +1,64 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify
+from flask import Flask, render_template, request, send_file, jsonify
 import csv
 import os
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
 
-# Funkce pro načtení všech zón ze zdrojového CSV souboru
-def load_zones_from_csv(filename):
-    zones = {}
-    with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile)
-        next(reader)  # Přeskočíme hlavičku
-        for row in reader:
-            zones[row[3]] = row[4]
-    return zones
-
-# Načtení všech zón ze souboru
-vsechny_zony = load_zones_from_csv('data/Default_CZK_1.csv')
-
-# Přidání zón EU-F a EU-M do seznamu zón
-vsechny_zony["EU-F"] = "Evropská unie - F"
-vsechny_zony["EU-M"] = "Evropská unie - M"
-
-# Konverze na seznam pro HTML šablonu
-vsechny_zony_seznam = [{"kod": k, "nazev": v} for k, v in vsechny_zony.items()]
-
-# Načtení CSV souboru do seznamu
-def load_csv(filename):
-    with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile)
-        return list(reader)
-
-# Uložení seznamu do CSV souboru
-def save_csv(filename, data):
-    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerows(data)
-
-# Úprava hodnot v seznamu
-def modify_values(zmeny, zony_data):
-    for zona in zony_data:
-        nazev_zony = zona['nazev_zony']
-        cena_hovoru = zona['cena_hovoru']
-        tarifikace = zona['tarifikace']
-
-        zmenene_zony = []
-
-        if nazev_zony == "EU-F":
-            zmenene_zony.extend(["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"])
-        elif nazev_zony == "EU-M":
-            zmenene_zony.extend(["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"])
-        else:
-            zmenene_zony.append(nazev_zony)
-
-        for row in zmeny:
-            if row[3] in zmenene_zony:
-                row[5] = cena_hovoru
-                row[7] = cena_hovoru  # Měnění ceny i pro druhý interval
-                if tarifikace:  # Pokud je tarifikace zadána, použij ji
-                    row[6] = tarifikace
+# Seznam zón pro Evropskou unii (zóna EU-F a EU-M)
+zona_EU_F = ["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"]
+zona_EU_M = ["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"]
 
 @app.route('/')
 def index():
-    if not os.path.exists('data'):
-        flash('Složka "data" neexistuje. Ujistěte se, že složka je ve správném adresáři.')
-    elif not os.path.isfile('data/Default_CZK_1.csv'):
-        flash('Soubor "Default_CZK_1.csv" nebyl nalezen ve složce "data". Ujistěte se, že soubor je na správném místě.')
-
-    return render_template('index.html', vsechny_zony=vsechny_zony_seznam)
+    vsechny_zony = []
+    with open('Default_CZK_1.csv', 'r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)  # Přeskočíme hlavičku
+        for row in reader:
+            vsechny_zony.append({'kod': row[3], 'nazev': row[4]})
+    
+    return render_template('index.html', vsechny_zony=vsechny_zony)
 
 @app.route('/process', methods=['POST'])
 def process():
     try:
-        vstupni_soubor = 'data/Default_CZK_1.csv'
-        zmeny = load_csv(vstupni_soubor)
+        nazev_noveho_souboru = request.form['nazev_noveho_souboru'] + '.csv'
+        input_zones = request.form.getlist('nazev_zony')
+        ceny_hovoru = request.form.getlist('cena_hovoru')
+        tarifikace_1 = request.form.getlist('tarifikace_1')
+        tarifikace_2 = request.form.getlist('tarifikace_2')
+        
+        # Načteme původní data
+        with open('Default_CZK_1.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            rows = list(reader)
+        
+        # Změníme hodnoty v souboru
+        for i, zona in enumerate(input_zones):
+            for row in rows:
+                if row[3] == zona or (zona == "EU-F" and row[3] in zona_EU_F) or (zona == "EU-M" and row[3] in zona_EU_M):
+                    row[5] = ceny_hovoru[i]  # Cena hovoru
+                    row[7] = ceny_hovoru[i]  # Cena hovoru pro druhý interval
+                    if tarifikace_1[i]:
+                        row[6] = tarifikace_1[i]  # Tarifikace pro první interval
+                    if tarifikace_2[i]:
+                        row[8] = tarifikace_2[i]  # Tarifikace pro druhý interval
 
-        zony_data = []
-        for i in range(len(request.form.getlist('nazev_zony'))):
-            zony_data.append({
-                'nazev_zony': request.form.getlist('nazev_zony')[i],
-                'cena_hovoru': request.form.getlist('cena_hovoru')[i],
-                'tarifikace': request.form.getlist('tarifikace')[i] if request.form.getlist('tarifikace')[i] else None
-            })
-
-        modify_values(zmeny, zony_data)
-
-        nazev_noveho_souboru = request.form['nazev_noveho_souboru'] + '.csv'  # Přidání přípony .csv
-        novy_soubor_path = f"data/{nazev_noveho_souboru}"
-        save_csv(novy_soubor_path, zmeny)
-
+        # Uložíme nový soubor
+        with open(nazev_noveho_souboru, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerows(rows)
+        
         return jsonify({'filename': nazev_noveho_souboru})
-
     except Exception as e:
-        flash(f"Došlo k chybě: {e}")
-        return redirect(url_for('index'))
+        print(e)
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/download/<filename>')
 def download(filename):
-    file_path = os.path.join('data', filename)
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
-    else:
-        flash('Soubor nebyl nalezen.')
-        return redirect(url_for('index'))
+    return send_file(filename, as_attachment=True)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    if not os.path.exists('data'):
+        os.makedirs('data')
+    app.run(debug=True)
