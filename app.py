@@ -4,20 +4,14 @@ import os
 
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_FILE_PATH = os.path.join(BASE_DIR, 'Default_CZK_1.csv')
-
 # Seznam zón pro Evropskou unii (zóna EU-F a EU-M)
 zona_EU_F = ["BEL-F", "BGR-F", "DNK-F", "EST-F", "FIN-F", "FRA-F", "HRV-F", "IRL-F", "ITA-F", "CYP-F", "LTU-F", "LVA-F", "LUX-F", "HUN-F", "MLT-F", "DEU-F", "NLD-F", "POL-F", "PRT-F", "AUT-F", "ROU-F", "GRC-F", "SVK-F", "SVN-F", "ESP-F", "SWE-F"]
 zona_EU_M = ["BEL-M", "BGR-M", "DNK-M", "EST-M", "FIN-M", "FRA-M", "HRV-M", "IRL-M", "ITA-M", "CYP-M", "LTU-M", "LVA-M", "LUX-M", "HUN-M", "MLT-M", "DEU-M", "NLD-M", "POL-M", "PRT-M", "AUT-M", "ROU-M", "GRC-M", "SVK-M", "SVN-M", "ESP-M", "SWE-M"]
 
 @app.route('/')
 def index():
-    if not os.path.exists(CSV_FILE_PATH):
-        return "CSV file not found", 404
-
     vsechny_zony = []
-    with open(CSV_FILE_PATH, 'r', newline='') as csvfile:
+    with open('Default_CZK_1.csv', 'r', newline='') as csvfile:
         reader = csv.reader(csvfile)
         next(reader)  # Přeskočíme hlavičku
         for row in reader:
@@ -31,11 +25,10 @@ def process():
         nazev_noveho_souboru = request.form['nazev_noveho_souboru'] + '.csv'
         input_zones = request.form.getlist('nazev_zony')
         ceny_hovoru = request.form.getlist('cena_hovoru')
-        tarifikace_1 = request.form.getlist('tarifikace_1')
-        tarifikace_2 = request.form.getlist('tarifikace_2')
+        tarifikace = request.form.getlist('tarifikace')
         
         # Načteme původní data
-        with open(CSV_FILE_PATH, 'r', newline='') as csvfile:
+        with open('Default_CZK_1.csv', 'r', newline='') as csvfile:
             reader = csv.reader(csvfile)
             rows = list(reader)
         
@@ -45,14 +38,11 @@ def process():
                 if row[3] == zona or (zona == "EU-F" and row[3] in zona_EU_F) or (zona == "EU-M" and row[3] in zona_EU_M):
                     row[5] = ceny_hovoru[i]  # Cena hovoru
                     row[7] = ceny_hovoru[i]  # Cena hovoru pro druhý interval
-                    if tarifikace_1[i]:
-                        row[6] = tarifikace_1[i]  # Tarifikace pro první interval
-                    if tarifikace_2[i]:
-                        row[8] = tarifikace_2[i]  # Tarifikace pro druhý interval
+                    if tarifikace[i]:
+                        row[6] = tarifikace[i]  # Tarifikace pro první interval
 
         # Uložíme nový soubor
-        new_csv_file_path = os.path.join(BASE_DIR, nazev_noveho_souboru)
-        with open(new_csv_file_path, 'w', newline='') as csvfile:
+        with open(nazev_noveho_souboru, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(rows)
         
@@ -63,10 +53,9 @@ def process():
 
 @app.route('/download/<filename>')
 def download(filename):
-    file_path = os.path.join(BASE_DIR, filename)
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
-    return "File not found", 404
+    return send_file(filename, as_attachment=True)
 
 if __name__ == '__main__':
+    if not os.path.exists('data'):
+        os.makedirs('data')
     app.run(debug=True)

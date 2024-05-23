@@ -36,8 +36,7 @@
         .zone-group input[name="cena_hovoru"] {
             flex: 1;
         }
-        .zone-group input[name="tarifikace_1"],
-        .zone-group input[name="tarifikace_2"] {
+        .zone-group input[name="tarifikace"] {
             flex: 1;
         }
         .zone-group .remove-button {
@@ -139,8 +138,7 @@
                         {% endfor %}
                     </select>
                     <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
-                    <input type="number" name="tarifikace_1" class="tarifikace" placeholder="Tarifikace 1 (nepovinné)" step="1" title="Tarifikace pro první interval" oninput="validateInput(this)">
-                    <input type="number" name="tarifikace_2" class="tarifikace" placeholder="Tarifikace 2 (nepovinné)" step="1" title="Tarifikace pro druhý interval" oninput="validateInput(this)">
+                    <input type="number" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" step="1" oninput="validateInput(this)">
                     <button type="button" class="remove-button" onclick="removeValues(this)">×</button>
                 </div>
             </div>
@@ -197,8 +195,7 @@
                     ${getSelectOptionsHtml()}
                 </select>
                 <input type="number" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" step="0.01" required oninput="validateInput(this)">
-                <input type="number" name="tarifikace_1" class="tarifikace" placeholder="Tarifikace 1 (nepovinné)" step="1" title="Tarifikace pro první interval" oninput="validateInput(this)">
-                <input type="number" name="tarifikace_2" class="tarifikace" placeholder="Tarifikace 2 (nepovinné)" step="1" title="Tarifikace pro druhý interval" oninput="validateInput(this)">
+                <input type="number" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" step="1" oninput="validateInput(this)">
                 <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
             `;
         }
@@ -213,8 +210,7 @@
             var zoneGroup = button.parentElement;
             zoneGroup.querySelector('select').value = '';
             zoneGroup.querySelector('input[name="cena_hovoru"]').value = '';
-            zoneGroup.querySelector('input[name="tarifikace_1"]').value = '';
-            zoneGroup.querySelector('input[name="tarifikace_2"]').value = '';
+            zoneGroup.querySelector('input[name="tarifikace"]').value = '';
             updateZoneOptions();
         }
 
