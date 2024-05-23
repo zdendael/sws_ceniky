@@ -24,6 +24,15 @@
             font-size: 16px;  /* Zvýšení velikosti písma */
             flex: 1;  /* Umožňuje input polím růst */
         }
+        .zone-group select {
+            min-width: 300px;  /* Nastavení minimální šířky pro select */
+        }
+        .zone-group input[name="cena_hovoru"] {
+            width: 100px;  /* Šířka pro pole ceny hovoru */
+        }
+        .zone-group input[name="tarifikace"] {
+            width: 150px;  /* Šířka pro pole tarifikace */
+        }
         .zone-group .remove-button {
             background-color: #ff4c4c;
             color: white;
@@ -33,6 +42,10 @@
             font-size: 16px;
             margin-top: 10px;
             height: 30px;
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .add-button, button[type="submit"] {
             background-color: #7ab00f;
@@ -66,6 +79,8 @@
         }
         label {
             font-size: 16px;
+            display: block;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -91,9 +106,8 @@
                             <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required>
-                    <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)">
-                    <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
+                    <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka">
+                    <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla">
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addZone()">+</button>
@@ -115,8 +129,8 @@
                         <option value="{{ zona.kod }}">{{ zona.kod }} : {{ zona.nazev }}</option>
                     {% endfor %}
                 </select>
-                <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required>
-                <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)">
+                <input type="text" name="cena_hovoru" placeholder="Cena hovoru (halíře za sekundu)" required pattern="^\d+(\.\d{1,2})?$" title="Pouze čísla a desetinná tečka">
+                <input type="text" name="tarifikace" class="tarifikace" placeholder="Tarifikace (nepovinné)" pattern="^\d*$" title="Pouze celá čísla">
                 <button type="button" class="remove-button" onclick="removeZone(this)">×</button>
             `;
             zoneContainer.appendChild(newZoneGroup);
